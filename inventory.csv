@@ -1,0 +1,79 @@
+Product,Maker,Surname,Colour,Amount,Cost,Product_ID
+Tulip Coaster,Dhruva,S,Raspberry,1,1300,DS01RAS-1300
+Tulip Coaster,Dhruva,S,Strawberry,1,1300,DS01STR-1300
+Tulip Coaster,Dhruva,S,Vanilla,1,1300,DS01VAN-1300
+Tulip Coaster,Dhruva,S,Mulberry,1,1300,DS01MUL-1300
+Tulip Coaster,Dhruva,S,Mango,1,1300,DS01MAN-1300
+Rose Coaster,Dhruva,S,White,1,750,DS02WHI-750
+Rose Coaster,Dhruva,S,Purple Multicolour,1,750,DS02MPUR-750
+Rose Coaster,Dhruva,S,Rusty Brown,1,750,DS02RUS-750
+Rose Coaster,Dhruva,S,Pattern Pink,1,750,DS02PPIN-750
+Rose Coaster,Dhruva,S,Pattern Yellow,1,750,DS02PYEL-750
+Rose Coaster,Dhruva,S,Green Yellow MIX,1,750,DS02MGY1-750
+Rose Coaster,Dhruva,S,Green Yellow MIX,1,750,DS02MGY2-750
+Rose Coaster,Dhruva,S,Coconut Brown,1,750,DS02COC-750
+Rose Coaster,Dhruva,S,Red,1,750,DS02RED-750
+Rose Coaster,Dhruva,S,Grey Raspberry MIX,1,750,DS02MGR-750
+Rose Coaster,Dhruva,S,Beige Dark Green MIX,1,750,DS02MBG-750
+Rose Coaster,Dhruva,S,Blue Multicolour,1,750,DS02MBLU-750
+Daisy Pouch,Dhruva,S,Rusty Brown,1,450,DS03RUS-450
+Daisy Pouch,Dhruva,S,Beige,1,450,DS03BEI-450
+Daisy Pouch,Dhruva,S,Black,1,450,DS03BLA-450
+Daisy Pouch,Dhruva,S,B&W,1,450,DS03B&W1-450
+Daisy Pouch,Dhruva,S,B&W,1,450,DS03B&W2-450
+Daisy Pouch,Dhruva,S,Dark Green,1,450,DS03DGR-450
+Daisy Pouch,Dhruva,S,Light Green,1,450,DS03LGR-450
+Daisy Pouch,Dhruva,S,Grey,1,450,DS03GRE-450
+Daisy Pouch,Dhruva,S,Coconut Brown,1,450,DS03COC-450
+Daisy Pouch,Dhruva,S,Baby Pink,1,450,DS03PIN-450
+Beanie,Dhruva,S,White Grey,1,1000,DS06WHI-1500
+Beanie,Dhruva,S,Pink White,1,1000,DS06PIN-1500
+Beanie,Dhruva,S,Blue Grey,1,1000,DS06BLU-1500
+f Scrunchie,Kriti,V,Brown,1,250,KV05BRO1-250
+f Scrunchie,Kriti,V,Brown,1,250,KV05BRO2-250
+f Scrunchie,Kriti,V,Gradient,1,250,KV05GRA-250
+f Scrunchie,Kriti,V,White,1,250,KV05WHI1-250
+f Scrunchie,Kriti,V,White,1,250,KV05WHI2-250
+f Scrunchie,Kriti,V,Light Brown,1,250,KV05LBR-250
+f Scrunchie,Kriti,V,Dark Brown,1,250,KV05DBR1-250
+f Scrunchie,Kriti,V,Dark Brown,1,250,KV05DBR2-250
+f Scrunchie,Kriti,V,Green,1,250,KV05GRE-250
+f Scrunchie,Kriti,V,Sky Blue,1,250,KV05SKY-250
+Scrunchie,Kriti,V,Brown,1,150,KV04BRO1-150
+Scrunchie,Kriti,V,Brown,1,150,KV04BRO2-150
+Scrunchie,Kriti,V,Brown,1,150,KV04BRO3-150
+Scrunchie,Kriti,V,White,1,150,KV04WHI1-150
+Scrunchie,Kriti,V,White,1,150,KV04WHI2-150
+Scrunchie,Kriti,V,Light Brown,1,150,KV04LBR1-150
+Scrunchie,Kriti,V,Light Brown,1,150,KV04LBR2-150
+Scrunchie,Kriti,V,Light Brown,1,150,KV04LBR3-150
+Scrunchie,Kriti,V,Dark Brown,1,150,KV04DBR1-150
+Scrunchie,Kriti,V,Dark Brown,1,150,KV04DBR2-150
+Scrunchie,Kriti,V,Dark Brown,1,150,KV04DBR3-150
+Scrunchie,Kriti,V,Green,1,150,KV04GRE1-150
+Scrunchie,Kriti,V,Green,1,150,KV04GRE2-150
+Scrunchie,Kriti,V,Green,1,150,KV04GRE3-150
+Scrunchie,Kriti,V,Ocean Blue,1,150,KV04OCE1-150
+Scrunchie,Kriti,V,Ocean Blue,1,150,KV04OCE2-150
+Scrunchie,Kriti,V,Ocean Blue,1,150,KV04OCE3-150
+Scrunchie,Kriti,V,Dark Green,1,150,KV04DGR1-150
+Scrunchie,Kriti,V,Dark Green,1,150,KV04DGR2-150
+Scrunchie,Kriti,V,Dark Green,1,150,KV04DGR3-150
+Gloves (S),Ketkii,B,Leaf Green,1,1000, KB07LEA-1000S
+Gloves (S),Ketkii,B,Dark Brown,1,1000,KB07DBR-1000S
+Gloves (S),Ketkii,B,Beige,1,1000,KB07BEI-1000S
+Gloves (M),Ketkii,B,Sky Blue,1,1000,KB07SKY-1000M
+Gloves (M),Ketkii,B,Beige,1,1000,KB07BEI-1000M
+Gloves (M),Ketkii,B,White,1,1000,KB07WHI-1000M
+Gloves (L),Ketkii,B,Sab Green,1,1000,KB07SAB-1000L
+Gloves (L),Ketkii,B,Brown,1,1000,KB07BRO-1000L
+Gloves (L),Ketkii,B,Aqua Blue,1,1000,KB07AQU-1000L
+Earbud Case,Ketkii,B,Sab Green,1,500,KB08SAB1-500
+Earbud Case,Ketkii,B,Sab Green,1,500,KB08SAB2-500
+Earbud Case,Ketkii,B,Black,1,500,KB08BLA1-500
+Earbud Case,Ketkii,B,Black,1,500,KB08BLA2-500
+Scrunchie ,Dhruva ,S,Pink ,1,150,DS04PIN1-150
+Scrunchie ,Dhruva ,S,Pink ,1,150,DS04PIN2-150
+Scrunchie ,Dhruva ,S,Multicolour Purple,1,150,DS04MPUR1-150
+Scrunchie ,Dhruva ,S,Multicolour Purple,1,150,DS04MPUR2-150
+Scrunchie ,Dhruva ,S,White,1,150,DS04WHI-150
