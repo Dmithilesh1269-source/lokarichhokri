@@ -30,6 +30,22 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# Force dataframe/table to use light theme
+st.markdown("""
+<style>
+/* Force Streamlit's canvas-based dataframe to light mode */
+.stDataFrame [data-testid="stDataFrame"],
+.stDataFrame div[class*="stDataFrame"],
+div[data-testid="stDataFrame"] > div {
+    background-color: white !important;
+    color: #6B1F1F !important;
+}
+div[data-testid="stDataFrame"] * {
+    color: #6B1F1F !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # ── CSS ───────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
@@ -136,10 +152,26 @@ section[data-testid="stSidebar"] label{
     border-bottom:1.5px solid var(--tcp); padding-bottom:.3rem;
 }
 
-/* table tweaks */
-[data-testid="stDataFrame"] th{
-    background:var(--tcp) !important; color:var(--dark) !important;
+/* table tweaks — force light theme throughout */
+[data-testid="stDataFrame"]{
+    border-radius:12px !important;
+    border:1.5px solid var(--tcp) !important;
+    overflow:hidden !important;
 }
+/* The dataframe renders inside an iframe — force light color-scheme */
+[data-testid="stDataFrame"] iframe,
+[data-testid="stDataFrame"] > div,
+[data-testid="stDataFrame"] canvas{
+    color-scheme: light only !important;
+    background: white !important;
+}
+/* Note column label */
+[data-testid="stDataFrame"] th,
+[data-testid="stDataFrame"] td{
+    color: var(--dark) !important;
+    background: white !important;
+}
+/* Streamlit's newer glide-data-grid uses canvas — inject via theme below */
 
 /* admin badge */
 .admin-badge{
@@ -149,6 +181,23 @@ section[data-testid="stSidebar"] label{
 }
 </style>
 """, unsafe_allow_html=True)
+
+
+def metric_card(label, value):
+    """Custom metric card with fully visible colors."""
+    st.markdown(f"""
+    <div style="background:white;border-radius:14px;padding:1rem 1.2rem;
+                border:1.5px solid #F2D4C8;box-shadow:0 2px 10px rgba(181,68,42,.08);">
+        <div style="font-size:.72rem;font-weight:600;color:#6B1F1F;
+                    text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem;">
+            {label}
+        </div>
+        <div style="font-size:1.6rem;font-weight:700;color:#B5442A;
+                    font-family:'Playfair Display',serif;">
+            {value}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # DATA LOADERS
@@ -513,17 +562,26 @@ if not is_admin:
     st.markdown(f'<div class="sec">Your Earnings — {me}</div>', unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
-    c1.metric("This Month's Cut", f"₹{my_data['total_cut']:,.0f}")
-    c2.metric("Items Sold This Month", my_data["sales_count"])
-    c3.metric("Total Earned (all time)", f"₹{my_all['total_cut']:,.0f}")
+    with c1: metric_card("This Month's Cut", f"₹{my_data['total_cut']:,.0f}")
+    with c2: metric_card("Items Sold This Month", my_data["sales_count"])
+    with c3: metric_card("Total Earned (all time)", f"₹{my_all['total_cut']:,.0f}")
 
     st.markdown('<div class="sec">Your Sales This Month</div>', unsafe_allow_html=True)
     my_sales = [s for s in enriched_sales if s["Maker"] == me]
     if my_sales:
-        st.dataframe(pd.DataFrame(my_sales)[["Date","Product ID","Product","Colour","Maker's Cut","Note"]],
-                     use_container_width=True, hide_index=True)
+        df_my = pd.DataFrame(my_sales)[["Date","Product ID","Product","Colour","Maker's Cut","Note"]]
+        df_my["Note"] = df_my["Note"].replace("nan","").fillna("")
+        st.dataframe(df_my, use_container_width=True, hide_index=True)
     else:
         st.info("No sales recorded for you this month yet.")
+    
+    # All time for this maker
+    my_all_sales = [s for s in all_enriched if s["Maker"] == me]
+    if my_all_sales:
+        st.markdown('<div class="sec">Your Total Sales — All Time</div>', unsafe_allow_html=True)
+        df_my_all = pd.DataFrame(my_all_sales)[["Date","Product ID","Product","Colour","Maker's Cut","Note"]]
+        df_my_all["Note"] = df_my_all["Note"].replace("nan","").fillna("")
+        st.dataframe(df_my_all, use_container_width=True, hide_index=True)
 
     st.markdown("""
     <div style="text-align:center;padding:2rem 0 .5rem;color:#D4896A;font-size:.78rem;">
@@ -563,12 +621,12 @@ st.markdown('<div class="sec">Summary</div>', unsafe_allow_html=True)
 
 total_revenue_all = sum(v["total_cut"] for v in all_earnings.values())
 s1,s2,s3,s4 = st.columns(4)
-s1.metric("Total Maker Cuts This Month", f"₹{total_cut:,.0f}")
-s2.metric("Sales This Month", len(enriched_sales))
-s3.metric("Total Sales Ever", len(sales_df))
+with s1: metric_card("Total Maker Cuts This Month", f"₹{total_cut:,.0f}")
+with s2: metric_card("Sales This Month", len(enriched_sales))
+with s3: metric_card("Total Sales Ever", len(sales_df))
 if maker_earnings:
     best = max(maker_earnings, key=lambda k: maker_earnings[k]["total_cut"])
-    s4.metric("Top Earner", best)
+    with s4: metric_card("Top Earner", best)
 
 # ── Profit split chart ────────────────────────────────────────────────────────
 if total_cut > 0:
@@ -617,6 +675,7 @@ st.markdown('<div class="sec">Sales This Month</div>', unsafe_allow_html=True)
 
 if enriched_sales:
     df_show = pd.DataFrame(enriched_sales)
+    df_show["Note"] = df_show["Note"].replace("nan", "").fillna("")
     st.dataframe(df_show, use_container_width=True, hide_index=True)
 
     csv_out = df_show.to_csv(index=False)
@@ -627,6 +686,32 @@ if enriched_sales:
     )
 else:
     st.info("No sales recorded this month. Add entries to sales.csv or use the sidebar.")
+
+# ── All-time sales table ──────────────────────────────────────────────────────
+st.markdown('<div class="sec">All Sales — Complete History</div>', unsafe_allow_html=True)
+
+if all_enriched:
+    df_all = pd.DataFrame(all_enriched)
+    # Clean up "nan" in Note column
+    df_all["Note"] = df_all["Note"].replace("nan", "").fillna("")
+    # Summary per maker all time
+    all_time_cols = st.columns(len(makers_df))
+    for i, (_, mrow) in enumerate(makers_df.iterrows()):
+        mname = str(mrow["name"])
+        mdata = all_earnings.get(mname, {"total_cut":0,"sales_count":0})
+        with all_time_cols[i]:
+            st.metric(f"{mname} — All Time", f"₹{mdata['total_cut']:,.0f}",
+                      f"{mdata['sales_count']} items")
+    st.dataframe(df_all, use_container_width=True, hide_index=True)
+    csv_all_time = df_all.to_csv(index=False)
+    st.download_button(
+        "Download Complete Sales History (CSV)", csv_all_time,
+        file_name="lokarichhokri_all_time_sales.csv",
+        mime="text/csv",
+        key="dl_alltime"
+    )
+else:
+    st.info("No sales recorded yet.")
 
 # ── Parse errors ──────────────────────────────────────────────────────────────
 if parse_errors:
@@ -735,6 +820,51 @@ if not products_df.empty:
                 </div>
             </div>
             """, unsafe_allow_html=True)
+
+# ── Total Sales Ever ──────────────────────────────────────────────────────────
+st.markdown('<div class="sec">Total Sales — All Time</div>', unsafe_allow_html=True)
+
+if all_enriched:
+    df_all = pd.DataFrame(all_enriched)
+
+    # Summary per maker all time
+    at_cols = st.columns(len(makers_df))
+    for i, (_, mrow) in enumerate(makers_df.iterrows()):
+        mname = str(mrow["name"])
+        mdata = all_earnings.get(mname, {"total_cut":0,"sales_count":0})
+        with at_cols[i]:
+            st.markdown(f"""
+            <div style="background:white;border-radius:14px;padding:1rem;
+                        border:1.5px solid #F2D4C8;text-align:center;
+                        box-shadow:0 2px 8px rgba(181,68,42,.07);">
+                <div style="font-family:'Playfair Display',serif;color:#6B1F1F;font-size:1rem;">
+                    {mname}
+                </div>
+                <div style="font-size:1.6rem;font-weight:700;color:#B5442A;">
+                    ₹{{mdata['total_cut']:,.0f}}
+                </div>
+                <div style="font-size:.75rem;color:#D4896A;">
+                    {{mdata['sales_count']}} items sold
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown("<div style='margin-top:1rem;'></div>", unsafe_allow_html=True)
+    st.dataframe(
+        df_all[["Date","Product ID","Maker","Product","Colour","Maker's Cut","Total Cost","Note"]],
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    csv_all_time = df_all.to_csv(index=False)
+    st.download_button(
+        "Download All-Time Sales Report (CSV)", csv_all_time,
+        file_name="lokarichhokri_all_time_sales.csv",
+        mime="text/csv",
+        key="dl_alltime"
+    )
+else:
+    st.info("No sales recorded yet.")
 
 # ── Footer ────────────────────────────────────────────────────────────────────
 st.markdown("""
