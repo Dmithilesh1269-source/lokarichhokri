@@ -199,6 +199,31 @@ def metric_card(label, value):
     </div>
     """, unsafe_allow_html=True)
 
+def show_table(df):
+    """Render a dataframe as styled HTML table — always visible text."""
+    cols = df.columns.tolist()
+    header = "".join(
+        f'<th style="background:#F2D4C8;color:#6B1F1F;font-size:.78rem;'
+        f'text-transform:uppercase;letter-spacing:.5px;padding:.5rem .8rem;'
+        f'text-align:left;font-weight:600;">{c}</th>' for c in cols
+    )
+    rows = ""
+    for i, (_, row) in enumerate(df.iterrows()):
+        bg = "white" if i % 2 == 0 else "#FDF6F0"
+        cells = "".join(
+            f'<td style="padding:.45rem .8rem;color:#6B1F1F;font-size:.82rem;'
+            f'border-bottom:1px solid #F2D4C8;">{str(row[c])}</td>' for c in cols
+        )
+        rows += f'<tr style="background:{bg};">{cells}</tr>'
+    html = f"""
+    <div style="overflow-x:auto;border-radius:12px;border:1.5px solid #F2D4C8;
+                box-shadow:0 2px 8px rgba(181,68,42,.07);margin-bottom:.5rem;">
+    <table style="width:100%;border-collapse:collapse;background:white;">
+        <thead><tr>{header}</tr></thead>
+        <tbody>{rows}</tbody>
+    </table></div>"""
+    st.markdown(html, unsafe_allow_html=True)
+
 # ══════════════════════════════════════════════════════════════════════════════
 # DATA LOADERS
 # ══════════════════════════════════════════════════════════════════════════════
@@ -571,7 +596,7 @@ if not is_admin:
     if my_sales:
         df_my = pd.DataFrame(my_sales)[["Date","Product ID","Product","Colour","Maker's Cut","Note"]]
         df_my["Note"] = df_my["Note"].replace("nan","").fillna("")
-        st.dataframe(df_my, use_container_width=True, hide_index=True)
+        show_table(df_my)
     else:
         st.info("No sales recorded for you this month yet.")
     
@@ -581,7 +606,7 @@ if not is_admin:
         st.markdown('<div class="sec">Your Total Sales — All Time</div>', unsafe_allow_html=True)
         df_my_all = pd.DataFrame(my_all_sales)[["Date","Product ID","Product","Colour","Maker's Cut","Note"]]
         df_my_all["Note"] = df_my_all["Note"].replace("nan","").fillna("")
-        st.dataframe(df_my_all, use_container_width=True, hide_index=True)
+        show_table(df_my_all)
 
     st.markdown("""
     <div style="text-align:center;padding:2rem 0 .5rem;color:#D4896A;font-size:.78rem;">
@@ -676,7 +701,7 @@ st.markdown('<div class="sec">Sales This Month</div>', unsafe_allow_html=True)
 if enriched_sales:
     df_show = pd.DataFrame(enriched_sales)
     df_show["Note"] = df_show["Note"].replace("nan", "").fillna("")
-    st.dataframe(df_show, use_container_width=True, hide_index=True)
+    show_table(df_show)
 
     csv_out = df_show.to_csv(index=False)
     st.download_button(
@@ -702,7 +727,7 @@ if all_enriched:
         mdata = all_earnings.get(mname, {"total_cut":0,"sales_count":0})
         with all_time_cols[i]:
             metric_card(f"{mname} — All Time", f"₹{mdata['total_cut']:,.0f}")
-    st.dataframe(df_all, use_container_width=True, hide_index=True)
+    show_table(df_all)
     csv_all_time = df_all.to_csv(index=False)
     st.download_button(
         "Download Complete Sales History (CSV)", csv_all_time,
@@ -728,7 +753,7 @@ with tab1:
     if not products_df.empty:
         display_p = products_df.copy()
         display_p.columns = ["No.", "Product Name","Maker's Cut (₹)","Profit (₹)","Platform 40% (₹)","Total Cost (₹)"]
-        st.dataframe(display_p, use_container_width=True, hide_index=True)
+        show_table(display_p)
     else:
         st.info("No products.csv found. Upload one from the sidebar.")
 
@@ -739,7 +764,7 @@ with tab2:
         inv_show["Status"] = inv_show["Product_ID"].apply(
             lambda x: "Sold" if str(x) in sold_ids else "Available"
         )
-        st.dataframe(inv_show, use_container_width=True, hide_index=True)
+        show_table(inv_show)
         avail = (inv_show["Status"] == "Available").sum()
         sold  = (inv_show["Status"] == "Sold").sum()
         ia, ib = st.columns(2)
@@ -841,20 +866,17 @@ if all_enriched:
                     {mname}
                 </div>
                 <div style="font-size:1.6rem;font-weight:700;color:#B5442A;">
-                    ₹{{mdata['total_cut']:,.0f}}
+                    ₹{mdata['total_cut']:,.0f}
                 </div>
                 <div style="font-size:.75rem;color:#D4896A;">
-                    {{mdata['sales_count']}} items sold
+                    {mdata['sales_count']} items sold
                 </div>
             </div>
             """, unsafe_allow_html=True)
 
     st.markdown("<div style='margin-top:1rem;'></div>", unsafe_allow_html=True)
-    st.dataframe(
-        df_all[["Date","Product ID","Maker","Product","Colour","Maker's Cut","Total Cost","Note"]],
-        use_container_width=True,
-        hide_index=True,
-    )
+    df_show_all = df_all[["Date","Product ID","Maker","Product","Colour","Maker's Cut","Total Cost","Note"]].copy()
+    show_table(df_show_all)
 
     csv_all_time = df_all.to_csv(index=False)
     st.download_button(
