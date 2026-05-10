@@ -682,7 +682,8 @@ if enriched_sales:
     st.download_button(
         "Download Sales Report (CSV)", csv_out,
         file_name=f"lokarichhokri_{month_lbl.replace(' ','_')}.csv",
-        mime="text/csv"
+        mime="text/csv",
+        key="dl_monthly"
     )
 else:
     st.info("No sales recorded this month. Add entries to sales.csv or use the sidebar.")
@@ -700,15 +701,14 @@ if all_enriched:
         mname = str(mrow["name"])
         mdata = all_earnings.get(mname, {"total_cut":0,"sales_count":0})
         with all_time_cols[i]:
-            st.metric(f"{mname} — All Time", f"₹{mdata['total_cut']:,.0f}",
-                      f"{mdata['sales_count']} items")
+            metric_card(f"{mname} — All Time", f"₹{mdata['total_cut']:,.0f}")
     st.dataframe(df_all, use_container_width=True, hide_index=True)
     csv_all_time = df_all.to_csv(index=False)
     st.download_button(
         "Download Complete Sales History (CSV)", csv_all_time,
         file_name="lokarichhokri_all_time_sales.csv",
         mime="text/csv",
-        key="dl_alltime"
+        key="dl_alltime_1"
     )
 else:
     st.info("No sales recorded yet.")
@@ -861,7 +861,7 @@ if all_enriched:
         "Download All-Time Sales Report (CSV)", csv_all_time,
         file_name="lokarichhokri_all_time_sales.csv",
         mime="text/csv",
-        key="dl_alltime"
+        key="dl_alltime_2"
     )
 else:
     st.info("No sales recorded yet.")
