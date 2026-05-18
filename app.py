@@ -331,14 +331,16 @@ def parse_pid(pid: str, makers_df: pd.DataFrame, products_df: pd.DataFrame):
         total_cost_from_id = int(dash_m.group(1))
 
     return {
-        "maker_code":   maker_code,
-        "maker_name":   str(maker_row["name"]),
-        "product_no":   product_no,
-        "product_name": str(prod_row["product_name"]),
-        "makers_cut":   float(prod_row["makers_cut"]),
-        "total_cost":   total_cost_from_id or float(prod_row["total_cost"]),
-        "colour_code":  rest.split("-")[0] if "-" in rest else rest,
-        "pid":          pid,
+        "maker_code":    maker_code,
+        "maker_name":    str(maker_row["name"]),
+        "product_no":    product_no,
+        "product_name":  str(prod_row["product_name"]),
+        "makers_cut":    float(prod_row["makers_cut"]),
+        "profit":        float(prod_row["profit"]),
+        "platform_40pct": float(prod_row["platform_40pct"]),
+        "total_cost":    total_cost_from_id or float(prod_row["total_cost"]),
+        "colour_code":   rest.split("-")[0] if "-" in rest else rest,
+        "pid":           pid,
     }
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -392,14 +394,16 @@ def compute_earnings(sales_df, makers_df, products_df, month_filter=None):
         maker_earnings[mname]["items"].append(parsed)
 
         enriched.append({
-            "Date":         sale_date,
-            "Product ID":   pid,
-            "Maker":        mname,
-            "Product":      parsed["product_name"],
-            "Colour":       parsed["colour_code"],
-            "Maker's Cut":  f"₹{cut:,.0f}",
-            "Total Cost":   f"₹{parsed['total_cost']:,.0f}",
-            "Note":         note,
+            "Date":             sale_date,
+            "Product ID":       pid,
+            "Maker":            mname,
+            "Product":          parsed["product_name"],
+            "Colour":           parsed["colour_code"],
+            "Maker's Cut":      f"₹{cut:,.0f}",
+            "Platform Fees":    f"₹{parsed['platform_40pct']:,.0f}",
+            "Profit":           f"₹{parsed['profit']:,.0f}",
+            "Total Cost":       f"₹{parsed['total_cost']:,.0f}",
+            "Note":             note,
         })
 
     return maker_earnings, enriched, errors
@@ -594,7 +598,7 @@ if not is_admin:
     st.markdown('<div class="sec">Your Sales This Month</div>', unsafe_allow_html=True)
     my_sales = [s for s in enriched_sales if s["Maker"] == me]
     if my_sales:
-        df_my = pd.DataFrame(my_sales)[["Date","Product ID","Product","Colour","Maker's Cut","Note"]]
+        df_my = pd.DataFrame(my_sales)[["Date","Product ID","Product","Colour","Maker's Cut","Platform Fees","Profit","Note"]]
         df_my["Note"] = df_my["Note"].replace("nan","").fillna("")
         show_table(df_my)
     else:
@@ -604,7 +608,7 @@ if not is_admin:
     my_all_sales = [s for s in all_enriched if s["Maker"] == me]
     if my_all_sales:
         st.markdown('<div class="sec">Your Total Sales — All Time</div>', unsafe_allow_html=True)
-        df_my_all = pd.DataFrame(my_all_sales)[["Date","Product ID","Product","Colour","Maker's Cut","Note"]]
+        df_my_all = pd.DataFrame(my_all_sales)[["Date","Product ID","Product","Colour","Maker's Cut","Platform Fees","Profit","Note"]]
         df_my_all["Note"] = df_my_all["Note"].replace("nan","").fillna("")
         show_table(df_my_all)
 
@@ -875,7 +879,7 @@ if all_enriched:
             """, unsafe_allow_html=True)
 
     st.markdown("<div style='margin-top:1rem;'></div>", unsafe_allow_html=True)
-    df_show_all = df_all[["Date","Product ID","Maker","Product","Colour","Maker's Cut","Total Cost","Note"]].copy()
+    df_show_all = df_all[["Date","Product ID","Maker","Product","Colour","Maker's Cut","Platform Fees","Profit","Total Cost","Note"]].copy()
     show_table(df_show_all)
 
     csv_all_time = df_all.to_csv(index=False)
