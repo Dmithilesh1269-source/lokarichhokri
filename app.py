@@ -200,13 +200,20 @@ def metric_card(label, value):
     """, unsafe_allow_html=True)
 
 def show_table(df):
-    """Render a dataframe as styled HTML table — always visible text."""
+    """Render a dataframe as styled HTML table with a totals row."""
+    MONEY_COLS = {"Maker's Cut", "Platform Fees", "Profit", "Total Cost"}
+    COUNT_COLS = {"Qty"}
+
     cols = df.columns.tolist()
+
+    # Build header
     header = "".join(
         f'<th style="background:#F2D4C8;color:#6B1F1F;font-size:.78rem;'
         f'text-transform:uppercase;letter-spacing:.5px;padding:.5rem .8rem;'
         f'text-align:left;font-weight:600;">{c}</th>' for c in cols
     )
+
+    # Build data rows
     rows = ""
     for i, (_, row) in enumerate(df.iterrows()):
         bg = "white" if i % 2 == 0 else "#FDF6F0"
@@ -215,12 +222,42 @@ def show_table(df):
             f'border-bottom:1px solid #F2D4C8;">{str(row[c])}</td>' for c in cols
         )
         rows += f'<tr style="background:{bg};">{cells}</tr>'
+
+    # Build totals row — sum money/count cols, blank for others
+    total_cells = ""
+    for i, c in enumerate(cols):
+        if c in MONEY_COLS:
+            # Strip ₹ and commas, sum up
+            try:
+                total = df[c].astype(str).str.replace("₹","").str.replace(",","").astype(float).sum()
+                val = f"₹{total:,.0f}"
+            except:
+                val = "—"
+            style = "font-weight:700;color:#B5442A;"
+        elif c in COUNT_COLS:
+            try:
+                val = str(int(df[c].astype(float).sum()))
+            except:
+                val = "—"
+            style = "font-weight:700;color:#B5442A;"
+        elif i == 0:
+            val = "TOTAL"
+            style = "font-weight:700;color:#6B1F1F;"
+        else:
+            val = ""
+            style = ""
+        total_cells += (
+            f'<td style="padding:.5rem .8rem;font-size:.82rem;'
+            f'border-top:2px solid #B5442A;background:#FDF6F0;{style}">{val}</td>'
+        )
+
     html = f"""
     <div style="overflow-x:auto;border-radius:12px;border:1.5px solid #F2D4C8;
                 box-shadow:0 2px 8px rgba(181,68,42,.07);margin-bottom:.5rem;">
     <table style="width:100%;border-collapse:collapse;background:white;">
         <thead><tr>{header}</tr></thead>
         <tbody>{rows}</tbody>
+        <tfoot><tr>{total_cells}</tr></tfoot>
     </table></div>"""
     st.markdown(html, unsafe_allow_html=True)
 
